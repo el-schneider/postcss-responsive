@@ -8,6 +8,7 @@ export interface PluginOptions {
   minWidth?: number
   maxWidth?: number
   funcName?: string
+  noClamp?: boolean
 }
 
 const postcssResponsive: PluginCreator<PluginOptions> = (options = {}) => ({
@@ -62,6 +63,7 @@ const postcssResponsive: PluginCreator<PluginOptions> = (options = {}) => ({
       let maxFontSize = convertToRem(values[1], rootFontSize)
       let minWidth = convertToRem(values[2] ?? options.minWidth, rootFontSize)
       let maxWidth = convertToRem(values[3] ?? options.maxWidth, rootFontSize)
+      let noClamp = values[4] ?? options.noClamp
 
       if (hasNoValue(minWidth)) {
         throw decl.error(`Missing min width in ${funcName} function.`)
@@ -79,7 +81,9 @@ const postcssResponsive: PluginCreator<PluginOptions> = (options = {}) => ({
       let intersection = toFixed(-minWidth! * slope + minFontSize!)
       let preferred = `${intersection}rem + ${toFixed(slope * 100)}vw`
 
-      let value = `clamp(${minFontSize}rem, ${preferred}, ${maxFontSize}rem)`
+      let value = noClamp
+        ? `calc(${preferred})`
+        : `clamp(${minFontSize}rem, ${preferred}, ${maxFontSize}rem)`
       let newNode = node as Node
       newNode.type = 'word'
       newNode.value = value
