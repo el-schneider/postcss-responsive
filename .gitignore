@@ -2,9 +2,6 @@
 node_modules/
 .pnpm-debug.log*
 
-# Build
-dist/
-
 # Testing
 coverage/
 
